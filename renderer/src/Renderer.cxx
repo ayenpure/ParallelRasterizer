@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 	screen.depth_buffer = depth_buffer;
 	screen.width = 1000;
 	screen.height = 1000;
-	double camera_position[] = {10,0,10};
+	double camera_position[] = {0,40,40};
 	double focus_point[] = {0,0,0};
 		
 	Camera camera = GetCamera(camera_position, focus_point);
