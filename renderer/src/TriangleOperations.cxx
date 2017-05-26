@@ -134,7 +134,7 @@ namespace std {
 	}
 }*/
 
-std::vector<Triangle> SplitTriangle(std::vector<Triangle> &list)
+/*std::vector<Triangle> SplitTriangle(std::vector<Triangle> &list)
 {
 		std::vector<Triangle> output(4*list.size());
 		for (unsigned int i = 0 ; i < list.size() ; i++)
@@ -216,9 +216,9 @@ std::vector<Triangle> SplitTriangle(std::vector<Triangle> &list)
 				}
 		}
 		return output;
-}
+}*/
 
-std::vector<Triangle> SplitTriangle(std::vector<Triangle> list, int parts) {
+/*std::vector<Triangle> SplitTriangle(std::vector<Triangle> list, int parts) {
 	if(parts == 0)
 		return list;
 	std::vector<Triangle> octant_triangles(list.size()*parts);
@@ -262,9 +262,9 @@ std::vector<Triangle> SplitTriangle(std::vector<Triangle> list, int parts) {
 	}
 	cout << "number of octant triangles : " << count << endl;
 	return octant_triangles;
-}
+}*/
 
-Triangle rotate_triangle(Triangle t, double angle, char axis) {
+/*Triangle rotate_triangle(Triangle t, double angle, char axis) {
 	Triangle temp;
 	for (int i = 0; i < 3; i++) {
 		double current_vertex[3] = { t.X[i], t.Y[i], t.Z[i] };
@@ -275,9 +275,9 @@ Triangle rotate_triangle(Triangle t, double angle, char axis) {
 		temp.Z[i] = transformed_vertex[2];
 	}
 	return temp;
-}
+}*/
 
-std::vector<Triangle> get_all_octants(Triangle t) {
+/*std::vector<Triangle> get_all_octants(Triangle t) {
 	int num_octants = 8;
 	std::vector<Triangle> octants(num_octants);
 	octants[0] = t;
@@ -288,9 +288,9 @@ std::vector<Triangle> get_all_octants(Triangle t) {
 			octants[i] = rotate_triangle(octants[i-1],M_PI / 2, 'y');
 	}
 	return octants;
-}
+}*/
 
-std::vector<Triangle> GetTriangles(int split_parts, int split_rec, int tri_grain) {
+/*std::vector<Triangle> GetTriangles(int split_parts, int split_rec, int tri_grain) {
 	std::vector<Triangle> list;
 	Triangle t;
 	t.X[0] = 1;
@@ -348,9 +348,9 @@ std::vector<Triangle> GetTriangles(int split_parts, int split_rec, int tri_grain
 	}
 	cout << "Triangles to process : " << newlist.size() << endl;
 	return newlist;
-}
+}*/
 
-std::vector< std::vector<Triangle> > GetTrianglesForProcs(int split_parts, int split_rec, int tri_grain) {
+/*std::vector< std::vector<Triangle> > GetTrianglesForProcs(int split_parts, int split_rec, int tri_grain) {
 	std::vector<Triangle> list;
 	Triangle t;
 	t.X[0] = 1;
@@ -406,8 +406,8 @@ std::vector< std::vector<Triangle> > GetTrianglesForProcs(int split_parts, int s
 	}
 	cout << "Triangles to process : " << newlist.size() << endl;
 	return newlist;*/
-	return proc_parted_triangles;
-}
+	/*return proc_parted_triangles;
+}*/
 
 void get_color_for_vertex(double* color,float val) {
 	int num_colors = NUMCOLORS;
@@ -441,7 +441,7 @@ void get_color_for_vertex(double* color,float val) {
 	color[2] = 0;*/
 }
 
-std::vector<Triangle> GetTriangles(const char *filename, char *variable) {
+std::vector<Triangle> GetTriangles(const char *filename,const char *variable) {
 	vtkPolyDataReader *rdr = vtkPolyDataReader::New();
 	rdr->SetFileName(filename);
 	//cerr << "Reading" << endl;
@@ -494,7 +494,7 @@ std::vector<Triangle> GetTriangles(const char *filename, char *variable) {
 	return tris;
 }
 
-std::vector<Triangle> GetTrianglesFromFiles(int no_of_procs, char *variable) {
+/*std::vector<Triangle> GetTrianglesFromFiles(int no_of_procs, char *variable) {
 	int index = 0;
 	std::vector<Triangle> tris(0);
 	for (int file_index = 0; file_index < no_of_procs; file_index++) {
@@ -536,16 +536,16 @@ std::vector<Triangle> GetTrianglesFromFiles(int no_of_procs, char *variable) {
 			tris[idx].X[0] = pt[0];
 			tris[idx].Y[0] = pt[1];
 			tris[idx].Z[0] = pt[2];
-			/*tris[idx].normals[0][0] = normals[3*ptIds[0]+0];
+			tris[idx].normals[0][0] = normals[3*ptIds[0]+0];
 			 tris[idx].normals[0][1] = normals[3*ptIds[0]+1];
-			 tris[idx].normals[0][2] = normals[3*ptIds[0]+2];*/
+			 tris[idx].normals[0][2] = normals[3*ptIds[0]+2];
 			pt = pts->GetPoint(ptIds[1]);
 			tris[idx].X[1] = pt[0];
 			tris[idx].Y[1] = pt[1];
 			tris[idx].Z[1] = pt[2];
-			/*tris[idx].normals[1][0] = normals[3*ptIds[1]+0];
+			tris[idx].normals[1][0] = normals[3*ptIds[1]+0];
 			 tris[idx].normals[1][1] = normals[3*ptIds[1]+1];
-			 tris[idx].normals[1][2] = normals[3*ptIds[1]+2];*/
+			 tris[idx].normals[1][2] = normals[3*ptIds[1]+2];
 			pt = pts->GetPoint(ptIds[2]);
 			tris[idx].X[2] = pt[0];
 			tris[idx].Y[2] = pt[1];
@@ -559,7 +559,7 @@ std::vector<Triangle> GetTrianglesFromFiles(int no_of_procs, char *variable) {
 	}
 	//process_for_vertex_normals(tris);
 	return tris;
-}
+}*/
 
 void transformTriangle(Triangle *t, Matrix composite, Camera camera) {
 	for (int i = 0; i < 3; i++) {

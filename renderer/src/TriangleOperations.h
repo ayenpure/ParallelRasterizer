@@ -332,21 +332,7 @@ void Print(std::ostream &o)
 
 };
 
-std::vector<Triangle> SplitTriangle(std::vector<Triangle> list, int parts);
-
-Triangle rotate_triangle(Triangle t, double angle, char axis);
-
-std::vector<Triangle> get_all_octants(Triangle t);
-
-std::vector<Triangle> GetTriangles(const char *filename, char *variable);
-
-std::vector<Triangle> GetTrianglesFromFiles(int no_of_procs, char *variable);
-
-std::vector<Triangle> GetTriangles(int split_parts, int split_rec, int tri_grain);
-
-std::vector< std::vector<Triangle> > GetTrianglesForProcs(int split_parts, int split_rec, int tri_grain);
-
-std::vector<Triangle> SplitTriangle(std::vector<Triangle> &list);
+std::vector<Triangle> GetTriangles(const char *filename, const char *variable);
 
 void transformTriangle(Triangle *t, Matrix composite, Camera camera);
 
