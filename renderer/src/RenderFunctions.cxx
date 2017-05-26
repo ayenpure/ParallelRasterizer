@@ -1,3 +1,4 @@
+#include <cmath>
 #include "Utilities.h"
 #include "RenderFunctions.h"
 #include "LightingParameters.h"
@@ -30,7 +31,7 @@ double calculate_phong_shading(LightingParameters lp, double *view_direction,
 			+ lp.Ks * specular_component;
 }
 
-double scan_line(Triangle *t, Screen *s) {
+void scan_line(Triangle *t, Screen *s) {
 	/*
 	 * Execute scan line algorithm for the current triangle.
 	 */
@@ -43,12 +44,12 @@ double scan_line(Triangle *t, Screen *s) {
 	double z_max = t->gethighestZ();
 
 	if (y_max < 0 || y_min > s->height)
-		return 0.;
+		return;
 	if (x_max < 0 || x_min > s->width)
-		return 0.;
+		return;
 	//z_max < -1 || z_min > 1
 	if (!((z_min > -1 && z_min < 1) && (z_max > -1 && z_max < 1)))
-		return 0.;
+		return;
 
 	if (y_min < 0)
 		y_min = 0;
@@ -91,7 +92,7 @@ double scan_line(Triangle *t, Screen *s) {
 			double current_shading = interpolate(left_intercept,
 					right_intercept, shading_left_intercept,
 					shading_right_intercept, current_x);
-			double color_for_current_pixel[3] = { 0, 0, 0 };
+			double color_for_current_pixel[3];// = { 0, 0, 0 };
 			s->calculate_color_for_pixel(left_intercept, right_intercept,
 					current_x, color_at_left_intercept,
 					color_at_right_intercept, color_for_current_pixel);
@@ -99,10 +100,8 @@ double scan_line(Triangle *t, Screen *s) {
 			/*double current_normal[3];
 			 interpolate_vector(left_intercept, right_intercept, normal_on_left,
 			 normal_on_right, current_x, current_normal);*/
-			if (s->find_pixel_and_color(current_x, current_y,
-					color_for_current_pixel, current_z, current_shading))
-				pixels_colored++;
+			s->find_pixel_and_color(current_x, current_y,
+					color_for_current_pixel, current_z, current_shading);
 		}
 	}
-	return pixels_colored;
 }

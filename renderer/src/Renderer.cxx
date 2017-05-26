@@ -1,7 +1,5 @@
 #include <iostream>
 #include <string.h>
-#include <cmath>
-#include <algorithm>
 #include <vector>
 #include <sstream>
 #include <vtkDataSet.h>
@@ -25,14 +23,11 @@
 #include "Screen.h"
 #include "RenderFunctions.h"
 
+#define HEIGHT 1000
+#define WIDTH 1000
+
 using std::cerr;
 using std::endl;
-using std::min;
-using std::max;
-using std::abs;
-using std::pow;
-using std::tan;
-using std::sin;
 
 vtkImageData *
 NewImage(int width, int height) {
@@ -63,9 +58,9 @@ int main(int argc, char *argv[]) {
 
 	int no_of_triangles = triangles.size();
 
-	vtkImageData *image = NewImage(1000, 1000);
+	vtkImageData *image = NewImage(HEIGHT, WIDTH);
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
-	int npixels = 1000 * 1000;
+	int npixels = WIDTH * HEIGHT;
 	for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
@@ -74,8 +69,8 @@ int main(int argc, char *argv[]) {
 	Screen screen;
 	screen.buffer = buffer;
 	screen.depth_buffer = depth_buffer;
-	screen.width = 1000;
-	screen.height = 1000;
+	screen.width = WIDTH;
+	screen.height = HEIGHT;
 	double camera_position[] = {0,40,40};
 	double focus_point[] = {0,0,0};
 		

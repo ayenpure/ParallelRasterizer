@@ -19,13 +19,8 @@ public:
 	double *depth_buffer;
 	int width, height;
 
-	bool find_pixel_and_color(int x, int y, double *color, double current_depth,
+	void find_pixel_and_color(int x, int y, double *color, double current_depth,
 			double shading_amount) {
-		/*
-                numFrags++;
-                if (numFrags % 10000 == 0)
-                      cerr << "Num frags = " << numFrags << endl;
-		*/
 		/*
 		 * Ensure the pixels to be painted are in the frame.
 		 */
@@ -35,22 +30,18 @@ public:
 			if (buffer_index < width * height * 3
 					&& (current_depth >= -1 && current_depth <= 1)
 					&& current_depth >= depth_buffer[depth_buffer_index]) {
-				/*double shading_amount = calculate_phong_shading(lp,
-				 view_direction, current_normal);*/
 				buffer[buffer_index++] = min(
 						ceil441((shading_amount * color[0]) * 255),
-						(double) 255);
+						255.);
 				buffer[buffer_index++] = min(
 						ceil441((shading_amount * color[1]) * 255),
-						(double) 255);
+						255.);
 				buffer[buffer_index] = min(
 						ceil441((shading_amount * color[2]) * 255),
-						(double) 255);
+						255.);
 				depth_buffer[depth_buffer_index] = current_depth;
-				return true;
 			}
 		}
-		return false;
 	}
 
 	/*
