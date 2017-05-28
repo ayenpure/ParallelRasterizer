@@ -22,6 +22,7 @@
 #include "Camera.h"
 #include "Screen.h"
 #include "RenderFunctions.h"
+#include <omp.h>
 
 #define HEIGHT 1000
 #define WIDTH 1000
@@ -61,11 +62,17 @@ int main(int argc, char *argv[]) {
 	vtkImageData *image = NewImage(HEIGHT, WIDTH);
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
 	int npixels = WIDTH * HEIGHT;
+
+        #pragma omp parallel for num_threads(4)
 	for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
+
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
+
+        #pragma omp parallel for num_threads(4)
 	for (int i = 0; i < npixels; i++)
 		depth_buffer[i] = -1;
+
 	Screen screen;
 	screen.buffer = buffer;
 	screen.depth_buffer = depth_buffer;
@@ -82,6 +89,7 @@ int main(int argc, char *argv[]) {
 	Matrix composite = get_total_transform_matrix(camera_transform,
 			view_transform, device_transform);
 	
+        #pragma omp parallel for num_threads(3)
 	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
 				
 		Triangle t = triangles[vecIndex];

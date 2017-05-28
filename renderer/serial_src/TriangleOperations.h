@@ -221,9 +221,6 @@ void Print(std::ostream &o)
 		t1->shading[0] = shading[top_index];
 		t1->shading[1] = shading[middle_index];
 		t1->shading[2] = shade_split;
-		/*memcpy(t1->normals[0], this->normals[top_index], 3 * sizeof(double));
-		 memcpy(t1->normals[1], this->normals[middle_index], 3 * sizeof(double));
-		 memcpy(t1->normals[2], split_normal, 3 * sizeof(double));*/
 
 		t1->colors[0][0] = colors[top_index][0];
 		t1->colors[0][1] = colors[top_index][1];
@@ -247,9 +244,6 @@ void Print(std::ostream &o)
 		t2->shading[0] = shading[bottom_index];
 		t2->shading[1] = shading[middle_index];
 		t2->shading[2] = shade_split;
-		/*memcpy(t2->normals[0], this->normals[bottom_index], 3 * sizeof(double));
-		 memcpy(t2->normals[1], this->normals[middle_index], 3 * sizeof(double));
-		 memcpy(t2->normals[2], split_normal, 3 * sizeof(double));*/
 
 		t2->colors[0][0] = colors[bottom_index][0];
 		t2->colors[0][1] = colors[bottom_index][1];
@@ -289,24 +283,6 @@ void Print(std::ostream &o)
 				right_vertex[1], colors[offset_index][2],
 				colors[right_index][2], quest_point);
 	}
-
-  /*bool calculate_normal(double *normal) {
-		  int i = 0;
-			int adj_1 = (i + 1) % 3;
-			int adj_2 = (i + 2) % 3;
-			double adj_1_vector[3] = { X[adj_1] - X[i], Y[adj_1] - Y[i],
-					Z[adj_1] - Z[i] };
-			normalize_vector(adj_1_vector);
-			double adj_2_vector[3] = { X[adj_2] - X[i], Y[adj_2] - Y[i],
-					Z[adj_2] - Z[i] };
-			normalize_vector(adj_2_vector);
-			cross_product(adj_1_vector, adj_2_vector, normal);
-			normalize_vector(normal);
-      //std::cout << "{" << normal[0] << ", " << normal[1] << ", " << normal[2] << "}" << std::endl;
-      if(std::isnan(normal[0]) || std::isnan(normal[1]) || std::isnan(normal[2]))
-        return false;
-      return true;
-	}*/
 
 	void calculate_normals() {
 		//cout << "Caluclating normal ----> calculate_normals" << endl;

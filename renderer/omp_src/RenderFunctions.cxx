@@ -47,7 +47,6 @@ void scan_line(Triangle *t, Screen *s) {
 		return;
 	if (x_max < 0 || x_min > s->width)
 		return;
-	//z_max < -1 || z_min > 1
 	if (!((z_min > -1 && z_min < 1) && (z_max > -1 && z_max < 1)))
 		return;
 
@@ -61,45 +60,63 @@ void scan_line(Triangle *t, Screen *s) {
 	if (x_max > s->width)
 		x_max = s->width;
 
+        double left_intercept;
+        double right_intercept;
+        double z_left_intercept;
+        double z_right_intercept;
+        double color_at_left_intercept[3], color_at_right_intercept[3];
+        double shading_left_intercept ;
+        double shading_right_intercept;
+        int current_x;
+        double current_z;
+        double current_shading;
+        double color_for_current_pixel[3];// = { 0, 0, 0 };
+
 	// Determine the orientation for the triangle
 	t->determine_triangle_orientation();
 	// Color the pixels that are inside the triangle
-	for (int current_y = ceil441(y_min); current_y <= floor441(y_max);
+        int to_bounds = floor441(y_max);
+        #pragma omp parallel for num_threads(2)
+	for (int current_y = ceil441(y_min); current_y <= to_bounds;
 			current_y++) {
-		double left_intercept = t->get_left_x_intercept(current_y);
-		double right_intercept = t->get_right_x_intercept(current_y);
-		double z_left_intercept = interpolate(t->offset_vertex[1],
-				t->left_vertex[1], t->Z[t->offset_index], t->Z[t->left_index],
-				current_y);
-		double z_right_intercept = interpolate(t->offset_vertex[1],
-				t->right_vertex[1], t->Z[t->offset_index], t->Z[t->right_index],
-				current_y);
-		double color_at_left_intercept[3], color_at_right_intercept[3];
-		t->calculate_color_for_scanline_extremes(current_y,
-				color_at_left_intercept, color_at_right_intercept);
 
-		double shading_left_intercept = interpolate(t->offset_vertex[1],
+		left_intercept    = t->get_left_x_intercept(current_y);
+		right_intercept   = t->get_right_x_intercept(current_y);
+		z_left_intercept  = interpolate(t->offset_vertex[1],
+				    t->left_vertex[1], t->Z[t->offset_index], 
+                                    t->Z[t->left_index],
+				    current_y);
+		z_right_intercept = interpolate(t->offset_vertex[1],
+				t->right_vertex[1], t->Z[t->offset_index], 
+                                t->Z[t->right_index],
+				current_y);
+		
+		t->calculate_color_for_scanline_extremes(current_y,
+				color_at_left_intercept, 
+                                color_at_right_intercept);
+
+		shading_left_intercept = interpolate(t->offset_vertex[1],
 				t->left_vertex[1], t->shading[t->offset_index],
 				t->shading[t->left_index], current_y);
-		double shading_right_intercept = interpolate(t->offset_vertex[1],
+		shading_right_intercept = interpolate(t->offset_vertex[1],
 				t->right_vertex[1], t->shading[t->offset_index],
 				t->shading[t->right_index], current_y);
 
-		for (int current_x = ceil441(left_intercept);
-				current_x <= floor441(right_intercept); current_x++) {
-			double current_z = interpolate(left_intercept, right_intercept,
-					z_left_intercept, z_right_intercept, current_x);
-			double current_shading = interpolate(left_intercept,
+		for (current_x = ceil441(left_intercept);
+				current_x <= floor441(right_intercept); 
+                                current_x++) {
+			 current_z       = interpolate(left_intercept, 
+                                        right_intercept,
+					z_left_intercept, z_right_intercept, 
+                                        current_x);
+			 current_shading = interpolate(left_intercept,
 					right_intercept, shading_left_intercept,
 					shading_right_intercept, current_x);
-			double color_for_current_pixel[3];// = { 0, 0, 0 };
+			
 			s->calculate_color_for_pixel(left_intercept, right_intercept,
 					current_x, color_at_left_intercept,
 					color_at_right_intercept, color_for_current_pixel);
 
-			/*double current_normal[3];
-			 interpolate_vector(left_intercept, right_intercept, normal_on_left,
-			 normal_on_right, current_x, current_normal);*/
 			s->find_pixel_and_color(current_x, current_y,
 					color_for_current_pixel, current_z, current_shading);
 		}
