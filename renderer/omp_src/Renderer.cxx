@@ -93,25 +93,27 @@ int main(int argc, char *argv[]) {
 			view_transform, device_transform);
 	
 	high_resolution_clock::time_point r_start = high_resolution_clock::now();
-        #pragma omp parallel for
+        #pragma omp parallel
 	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
-				
-		Triangle t = triangles[vecIndex];
+		#pragma omp task
+ 		{		
+			Triangle t = triangles[vecIndex];
 
-		transformTriangle(&t, composite, camera);
+			transformTriangle(&t, composite, camera);
 		
-		if (t.is_flat_bottom_triangle()) {
-			scan_line(&t, &screen);
-		} else {
-			Triangle t1, t2;
-			t.split_triangle(&t1, &t2);
-			scan_line(&t1, &screen);
-			scan_line(&t2, &screen);
+			if (t.is_flat_bottom_triangle()) {
+				scan_line(&t, &screen);
+			} else {
+				Triangle t1, t2;
+				t.split_triangle(&t1, &t2);
+				scan_line(&t1, &screen);
+				scan_line(&t2, &screen);
+			}
 		}
 	}
 
 	high_resolution_clock::time_point r_end = high_resolution_clock::now();
-	duration<double> time_span = duration_cast<duration<double>>(r_start - r_end);
+	duration<double> time_span = duration_cast<duration<double>>(r_end - r_start);
 	std::cout << "Time to render image : " << time_span.count() << " seconds." << endl;
 	std::cout << std::endl;
 

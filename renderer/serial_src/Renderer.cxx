@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	high_resolution_clock::time_point r_end = high_resolution_clock::now();
-	duration<double> time_span = duration_cast<duration<double>>(r_start - r_end);
+	duration<double> time_span = duration_cast<duration<double>>(r_end - r_start);
 	std::cout << "Time to render image : " << time_span.count() << " seconds" << endl;
 
 	std::ostringstream oss;
