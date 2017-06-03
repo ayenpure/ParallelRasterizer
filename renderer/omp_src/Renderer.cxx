@@ -66,13 +66,13 @@ int main(int argc, char *argv[]) {
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
 	int npixels = WIDTH * HEIGHT;
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
 
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
 	for (int i = 0; i < npixels; i++)
 		depth_buffer[i] = -1;
 
@@ -93,10 +93,8 @@ int main(int argc, char *argv[]) {
 			view_transform, device_transform);
 	
 	high_resolution_clock::time_point r_start = high_resolution_clock::now();
-        #pragma omp parallel
+        #pragma omp parallel for schedule(dynamic)
 	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
-		#pragma omp task
- 		{		
 			Triangle t = triangles[vecIndex];
 
 			transformTriangle(&t, composite, camera);
@@ -109,7 +107,6 @@ int main(int argc, char *argv[]) {
 				scan_line(&t1, &screen);
 				scan_line(&t2, &screen);
 			}
-		}
 	}
 
 	high_resolution_clock::time_point r_end = high_resolution_clock::now();

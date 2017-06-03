@@ -76,7 +76,7 @@ void scan_line(Triangle *t, Screen *s) {
 	t->determine_triangle_orientation();
 	// Color the pixels that are inside the triangle
         int to_bounds = floor441(y_max);
-        #pragma omp parallel for num_threads(2)
+        #pragma omp parallel for 
 	for (int current_y = ceil441(y_min); current_y <= to_bounds;
 			current_y++) {
 
@@ -120,5 +120,6 @@ void scan_line(Triangle *t, Screen *s) {
 			s->find_pixel_and_color(current_x, current_y,
 					color_for_current_pixel, current_z, current_shading);
 		}
+        #pragma omp flush
 	}
 }
