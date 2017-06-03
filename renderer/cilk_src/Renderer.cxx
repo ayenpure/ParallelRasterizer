@@ -1,3 +1,4 @@
+#include <cilk/cilk.h>
 #include <iostream>
 #include <string.h>
 #include <vector>
@@ -22,12 +23,16 @@
 #include "Camera.h"
 #include "Screen.h"
 #include "RenderFunctions.h"
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
 #define HEIGHT 1000
 #define WIDTH 1000
 
-using std::cerr;
-using std::endl;
+
+using namespace std;
+using namespace std::chrono;
 
 vtkImageData *
 NewImage(int width, int height) {
@@ -61,10 +66,10 @@ int main(int argc, char *argv[]) {
 	vtkImageData *image = NewImage(HEIGHT, WIDTH);
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
 	int npixels = WIDTH * HEIGHT;
-	for (int i = 0; i < npixels * 3; i++)
+	cilk_for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
-	for (int i = 0; i < npixels; i++)
+	cilk_for (int i = 0; i < npixels; i++)
 		depth_buffer[i] = -1;
 	Screen screen;
 	screen.buffer = buffer;
@@ -82,7 +87,9 @@ int main(int argc, char *argv[]) {
 	Matrix composite = get_total_transform_matrix(camera_transform,
 			view_transform, device_transform);
 	
-	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
+	high_resolution_clock::time_point r_start = high_resolution_clock::now();
+
+	cilk_for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
 				
 		Triangle t = triangles[vecIndex];
 
@@ -97,6 +104,12 @@ int main(int argc, char *argv[]) {
 			scan_line(&t2, &screen);
 		}
 	}
+
+	high_resolution_clock::time_point r_end = high_resolution_clock::now();
+	
+	duration<double> time_span = duration_cast<duration<double>>(r_start - r_end);
+	std::cout << "Time to render image : " << time_span.count() << " seconds." << endl;
+	std::cout << std::endl;	
 
 	std::ostringstream oss;
 	oss << "outputimage";

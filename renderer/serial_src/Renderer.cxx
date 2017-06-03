@@ -22,12 +22,15 @@
 #include "Camera.h"
 #include "Screen.h"
 #include "RenderFunctions.h"
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
 #define HEIGHT 1000
 #define WIDTH 1000
 
-using std::cerr;
-using std::endl;
+using namespace std;
+using namespace std::chrono;
 
 vtkImageData *
 NewImage(int width, int height) {
@@ -81,7 +84,9 @@ int main(int argc, char *argv[]) {
 	Matrix device_transform = camera.DeviceTransform(screen);
 	Matrix composite = get_total_transform_matrix(camera_transform,
 			view_transform, device_transform);
-	
+
+	high_resolution_clock::time_point r_start = high_resolution_clock::now();
+
 	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
 				
 		Triangle t = triangles[vecIndex];
@@ -97,6 +102,10 @@ int main(int argc, char *argv[]) {
 			scan_line(&t2, &screen);
 		}
 	}
+	
+	high_resolution_clock::time_point r_end = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(r_start - r_end);
+	std::cout << "Time to render image : " << time_span.count() << " seconds" << endl;
 
 	std::ostringstream oss;
 	oss << "outputimage";

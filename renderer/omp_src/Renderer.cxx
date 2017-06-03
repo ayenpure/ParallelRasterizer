@@ -23,12 +23,15 @@
 #include "Screen.h"
 #include "RenderFunctions.h"
 #include <omp.h>
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
 #define HEIGHT 1000
 #define WIDTH 1000
 
-using std::cerr;
-using std::endl;
+using namespace std;
+using namespace std::chrono;
 
 vtkImageData *
 NewImage(int width, int height) {
@@ -63,13 +66,13 @@ int main(int argc, char *argv[]) {
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
 	int npixels = WIDTH * HEIGHT;
 
-        #pragma omp parallel for num_threads(4)
+        #pragma omp parallel for
 	for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
 
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
 
-        #pragma omp parallel for num_threads(4)
+        #pragma omp parallel for
 	for (int i = 0; i < npixels; i++)
 		depth_buffer[i] = -1;
 
@@ -89,7 +92,8 @@ int main(int argc, char *argv[]) {
 	Matrix composite = get_total_transform_matrix(camera_transform,
 			view_transform, device_transform);
 	
-        #pragma omp parallel for num_threads(3)
+	high_resolution_clock::time_point r_start = high_resolution_clock::now();
+        #pragma omp parallel for
 	for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
 				
 		Triangle t = triangles[vecIndex];
@@ -105,6 +109,11 @@ int main(int argc, char *argv[]) {
 			scan_line(&t2, &screen);
 		}
 	}
+
+	high_resolution_clock::time_point r_end = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(r_start - r_end);
+	std::cout << "Time to render image : " << time_span.count() << " seconds." << endl;
+	std::cout << std::endl;
 
 	std::ostringstream oss;
 	oss << "outputimage";
