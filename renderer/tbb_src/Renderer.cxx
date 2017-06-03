@@ -1,4 +1,4 @@
-#include <cilk/cilk.h>
+#include <tbb/parallel_for.h>
 #include <iostream>
 #include <string.h>
 #include <vector>
@@ -66,10 +66,10 @@ int main(int argc, char *argv[]) {
 	vtkImageData *image = NewImage(HEIGHT, WIDTH);
 	unsigned char *buffer = (unsigned char *) image->GetScalarPointer(0, 0, 0);
 	int npixels = WIDTH * HEIGHT;
-	cilk_for (int i = 0; i < npixels * 3; i++)
+	for (int i = 0; i < npixels * 3; i++)
 		buffer[i] = 0;
 	double *depth_buffer = (double*)malloc(npixels*sizeof(double));
-	cilk_for (int i = 0; i < npixels; i++)
+	for (int i = 0; i < npixels; i++)
 		depth_buffer[i] = -1;
 	Screen screen;
 	screen.buffer = buffer;
@@ -89,7 +89,25 @@ int main(int argc, char *argv[]) {
 	
 	high_resolution_clock::time_point r_start = high_resolution_clock::now();
 
-	cilk_for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
+	tbb::parallel_for( tbb::blocked_range<int> (0, triangles.size()),
+	
+		[&](tbb::blocked_range<int>& range) {
+			for(int i = range.begin(); i < range.end(); i++) {
+				Triangle t = triangles[i];
+				transformTriangle(&t, composite, camera);
+				if (t.is_flat_bottom_triangle()) {
+					scan_line(&t, &screen);
+				} else {
+					Triangle t1, t2;
+					t.split_triangle(&t1, &t2);
+					scan_line(&t1, &screen);
+					scan_line(&t2, &screen);
+				}				
+			}
+		}
+
+	);
+	/*for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
 				
 		Triangle t = triangles[vecIndex];
 
@@ -103,7 +121,7 @@ int main(int argc, char *argv[]) {
 			scan_line(&t1, &screen);
 			scan_line(&t2, &screen);
 		}
-	}
+	}*/
 
 	high_resolution_clock::time_point r_end = high_resolution_clock::now();
 	
