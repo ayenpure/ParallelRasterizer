@@ -1,0 +1,12 @@
+\chapter*{Proccess of Parallelizing}
+
+\begin{center}
+    \Large\textbf{Serial Optimizations}\\
+\end{center}
+    The first thing we did before we embarked on actually parallelizing this project was to optimize our serial code in specified regions. Typically, when optimizing code you look for a certian number of things. The following is what we focused on. 
+
+\begin{itemize}
+    \item Cache misses, when the code recalls data that will more than likley no longer be in the cache at lower level memory, it can cause our program to take a lot longer than desired or expected. We focused on trying to keep memory used more frequently local.  
+    \item Over allocated variables, for example when variables are created in a for loop. Not only does this increase the amount of memory, but it increases cache reads/writes as well. This can lead to an excruciating dip in preformance. Typically to solve this problem we would try to define the variables and allocate them as soon as possible to reduce the frequency of creation and writing to variables.
+    \item Passed parameter optimization, this is when a funcion is passed a copy or a pointer when not needed. The problem that this creates is the speed at which items can be passed can bottleneck preformance enough to sometimes lead to a noticble difference. Our method of reducing such a problem is to either pass references instead of pointers, eliminate them from being passed at all, or to pass a pointer/reference instead of a whole copy of the data.
+\end{itemize}
