@@ -17,6 +17,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkCellArray.h>
 #include <vtkDataSetWriter.h>
+#include <fstream>
 
 #include "Utilities.h"
 #include "TriangleOperations.h"
@@ -27,9 +28,9 @@
 #define MAXRANGE 6
 #define NUMCOLORS 8
 
-static double mins[7] = { 1, 2, 2.5, 3, 3.5, 4, 5 };
-static double maxs[7] = { 2, 2.5, 3, 3.5, 4, 5, 6 };
-static unsigned char RGB[NUMCOLORS][3] = {
+/*double mins[7] = { 1, 2, 2.5, 3, 3.5, 4, 5 };
+double maxs[7] = { 2, 2.5, 3, 3.5, 4, 5, 6 };
+unsigned char RGB[NUMCOLORS][3] = {
         { 71, 71, 219 },
         { 0, 0, 91 },
         { 0, 255, 255 },
@@ -38,11 +39,11 @@ static unsigned char RGB[NUMCOLORS][3] = {
         { 255, 96, 0 },
         { 107, 0, 0 },
         { 224, 76, 76 } 
-};
+};*/
 
 LightingParameters lp;
 
-void get_color_for_vertex(double (&color)[3],float val) {
+void get_color_for_vertex(double (&color)[3],float val, double *mins, double *maxs, unsigned char RGB[][3]) {
 	int r;
 	for (r = 0 ; r < NUMCOLORS-1 ; r++) {
 		if (mins[r] <= val && val < maxs[r])
@@ -60,7 +61,33 @@ void get_color_for_vertex(double (&color)[3],float val) {
 	color[2] = (RGB[r][2]+proportion*(RGB[r+1][2]-RGB[r][2]))/255.0;
 }
 
-std::vector<Triangle> GetTriangles(const char *filename, const char *variable) {
+std::vector<Triangle> GetTriangles(const char *filename, const char *variable, const char *config) {
+	int num_files, num_colors;
+	double *mins;
+	double *maxs;
+	ifstream toRead(config);
+	if (toRead.is_open()) {
+		toRead >> num_files >> num_files >> num_files >> num_files >> num_files >> num_files >> num_files;
+		toRead >> num_colors;
+		mins = (double*)malloc((num_colors-1)*sizeof(double));
+		maxs = (double*)malloc((num_colors-1)*sizeof(double));
+		toRead >> mins[0];
+		int i;
+		for(i = 1; i < num_colors - 1; i++) {
+			toRead >> mins[i];
+			maxs[i-1] = mins[i];
+		}
+		toRead >> maxs[i-1];		
+	}	
+	unsigned char RGB[num_colors][3];
+	int color_val;
+	for(int i = 0; i < num_colors; i++) {
+		for(int j = 0; j < 3; j++) {
+			toRead >> color_val;
+			RGB[i][j] = color_val;
+		}
+	}
+
 	vtkPolyDataReader *rdr = vtkPolyDataReader::New();
 	rdr->SetFileName(filename);
 	rdr->Update();
@@ -68,11 +95,9 @@ std::vector<Triangle> GetTriangles(const char *filename, const char *variable) {
 		cerr << "Unable to open file!!" << endl;
 		exit (EXIT_FAILURE);
 	}
-
 	vtkPolyData *pd = rdr->GetOutput();
 	int numTris     = pd->GetNumberOfCells();
 	std::vector<Triangle> tris(numTris);
-
 	vtkPoints *pts      = pd->GetPoints();
 	vtkCellArray *cells = pd->GetPolys();
 	vtkDoubleArray *var = (vtkDoubleArray *) pd->GetPointData()->GetArray("hardyglobal");
@@ -115,7 +140,7 @@ std::vector<Triangle> GetTriangles(const char *filename, const char *variable) {
 
 		for (int j = 0; j < 3; j++) {
 			val = color_ptr[ptIds[j]];
-			get_color_for_vertex(tris[idx].colors[j], val);
+			get_color_for_vertex(tris[idx].colors[j], val, mins, maxs, RGB);
 		}
 	}
 	return tris;

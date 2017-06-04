@@ -22,6 +22,7 @@
 #include "Camera.h"
 #include "Screen.h"
 #include "RenderFunctions.h"
+#include <fstream>
 #include <ctime>
 #include <ratio>
 #include <chrono>
@@ -52,11 +53,20 @@ void WriteImage(vtkImageData *img, const char *filename) {
 
 int main(int argc, char *argv[]) {
 	std::vector<Triangle> triangles;
-	if(argc < 2) {
-		cout << "Usage : render <mesh file> <variable/field>" << endl;
+	if(argc < 3) {
+		cout << "Usage : render <mesh file> <variable/field> <config>" << endl;
 		exit (EXIT_FAILURE);
 	} else {
-		triangles = GetTriangles(argv[1], argv[2]);
+		triangles = GetTriangles(argv[1], argv[2], argv[3]);
+	}
+
+	double camera_position[3];
+	double focus_point[3];
+	ifstream toRead(argv[3]);
+	if (toRead.is_open()) {
+		toRead >> camera_position[0] >> camera_position[1] >> camera_position[2];
+		toRead >> focus_point[0] >> focus_point[1] >> focus_point[3];
+		toRead.close();
 	}
 
 	int no_of_triangles = triangles.size();
@@ -74,8 +84,6 @@ int main(int argc, char *argv[]) {
 	screen.depth_buffer = depth_buffer;
 	screen.width = WIDTH;
 	screen.height = HEIGHT;
-	double camera_position[] = {0,40,40};
-	double focus_point[] = {0,0,0};
 		
 	Camera camera = GetCamera(camera_position, focus_point);
 		
