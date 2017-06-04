@@ -308,7 +308,7 @@ void Print(std::ostream &o)
 
 };
 
-std::vector<Triangle> GetTriangles(const char *filename, const char *variable);
+std::vector<Triangle> GetTriangles(const char *filename, const char *variable, const char *config);
 
 void transformTriangle(Triangle *t, Matrix composite, Camera camera);
 

@@ -54,11 +54,20 @@ void WriteImage(vtkImageData *img, const char *filename) {
 
 int main(int argc, char *argv[]) {
 	std::vector<Triangle> triangles;
-	if(argc < 2) {
-		cout << "Usage : render <mesh file> <variable/field>" << endl;
+	if(argc < 3) {
+		cout << "Usage : render <mesh file> <variable/field> <config>" << endl;
 		exit (EXIT_FAILURE);
 	} else {
-		triangles = GetTriangles(argv[1], argv[2]);
+		triangles = GetTriangles(argv[1], argv[2], argv[3]);
+	}
+
+	double camera_position[3];
+	double focus_point[3];
+	ifstream toRead(argv[3]);
+	if (toRead.is_open()) {
+		toRead >> camera_position[0] >> camera_position[1] >> camera_position[2];
+		toRead >> focus_point[0] >> focus_point[1] >> focus_point[3];
+		toRead.close();
 	}
 
 	int no_of_triangles = triangles.size();
@@ -76,8 +85,6 @@ int main(int argc, char *argv[]) {
 	screen.depth_buffer = depth_buffer;
 	screen.width = WIDTH;
 	screen.height = HEIGHT;
-	double camera_position[] = {0,40,40};
-	double focus_point[] = {0,0,0};
 		
 	Camera camera = GetCamera(camera_position, focus_point);
 		
@@ -107,21 +114,6 @@ int main(int argc, char *argv[]) {
 		}
 
 	);
-	/*for (int vecIndex = 0; vecIndex < triangles.size(); vecIndex++) {
-				
-		Triangle t = triangles[vecIndex];
-
-		transformTriangle(&t, composite, camera);
-		
-		if (t.is_flat_bottom_triangle()) {
-			scan_line(&t, &screen);
-		} else {
-			Triangle t1, t2;
-			t.split_triangle(&t1, &t2);
-			scan_line(&t1, &screen);
-			scan_line(&t2, &screen);
-		}
-	}*/
 
 	high_resolution_clock::time_point r_end = high_resolution_clock::now();
 	
