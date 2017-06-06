@@ -10,3 +10,26 @@
     \item Over allocated variables, for example when variables are created in a for loop. Not only does this increase the amount of memory, but it increases cache reads/writes as well. This can lead to an excruciating dip in preformance. Typically to solve this problem we would try to define the variables and allocate them as soon as possible to reduce the frequency of creation and writing to variables.
     \item Passed parameter optimization, this is when a funcion is passed a copy or a pointer when not needed. The problem that this creates is the speed at which items can be passed can bottleneck preformance enough to sometimes lead to a noticble difference. Our method of reducing such a problem is to either pass references instead of pointers, eliminate them from being passed at all, or to pass a pointer/reference instead of a whole copy of the data.
 \end{itemize}
+
+
+\begin{center}
+    \Large\textbf{OMP Optimizations}\\
+\end{center}
+
+    OMP was the hardest to parallelize with this project. The problem that we ran into was the way that OMP was work-sharing. We believe that work stealing was the actual culprit of the non admerable aspect of the performance.
+
+\begin
+    \Medium\textbf{Work Sharing/Stealing}\\
+\end
+    Work Sharing a parallel construct in which a program shares part of the data between different processors or threads in able to execute the program. There are plenty of different patterns to achieve the desired output. Where work stealing is different is that it will take any work from a thread if it is idle in order to not waste it's processing power. 
+
+    We beleive when running OMP there was a lot of work stealing, which isn't always a bad thing, but in this case the threads were overly trying to access data, causing either a lot of cache misses or a lot of the same work being computed over and over.
+
+    Our solution ot solve this problem was to try multiple different methods. The first method we attempted was tasks, which we were hoping that the threads would focus more on their own data segements and would reduce work stealing. This proved to be of minimal success. The next attempt was to try chuncking the data within the for loops. Chunking is the proccess of setting a set size per thread/processor to do a set size of work. This proved to improve preformance, but only minimally. Lastly, we tried to increase the stacksize that each thread could have. We beleived by increasing the size of the data that each thread could work on, it wouldn't work steal from others as much because of it's preoccupation. This also returned with minimal improvments to our program.
+
+\begin{center}
+    \Large\textbf{Cilk and TBB}\\
+\end{center}
+
+    Cilk and TBB actually preformed great in our rasterizer. We actually had an incredible increase in speed while parallelizing our code with these two languages. We focused on the main functions and the scan line algorithm implementation. 
+    
