@@ -13,14 +13,15 @@
 
 
 \begin{center}
+    \vspace{20mm}
     \Large\textbf{OMP Optimizations}\\
 \end{center}
 
     OMP was the hardest to parallelize with this project. The problem that we ran into was the way that OMP was work-sharing. We believe that work stealing was the actual culprit of the non admerable aspect of the performance.
 
-\begin
-    \Medium\textbf{Work Sharing/Stealing}\\
-\end
+\begin{center}
+    \Large\textbf{Work Sharing/Stealing}\\
+\end{center}
     Work Sharing a parallel construct in which a program shares part of the data between different processors or threads in able to execute the program. There are plenty of different patterns to achieve the desired output. Where work stealing is different is that it will take any work from a thread if it is idle in order to not waste it's processing power. 
 
     We beleive when running OMP there was a lot of work stealing, which isn't always a bad thing, but in this case the threads were overly trying to access data, causing either a lot of cache misses or a lot of the same work being computed over and over.
