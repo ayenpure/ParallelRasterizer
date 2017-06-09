@@ -1,1 +1,23 @@
 \chapter*{Conclusion}
+
+
+\begin{tabular}{ |p{5cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|  }
+ \hline
+ \multicolumn{5}{|c|}{Results} \\
+ \hline
+ Datasets & Serial & OpenMP & CilkPlus & TBB\\
+ \hline
+ HardyGlobal Approximation (170,939 polygons, 4 cores) & 0.46693 & 0.220864 & 0.157116 & 0.136108\\
+ 8 cores & - & 0.120751 & 0.0850136 & 0.0818198\\
+ \hline
+ Tornado Approximation (5,317,225 polygons, 4 cores) & 9.55054 & 3.08153 & 2.46171 & 2.47374\\
+ 8 cores & - & 1.70896 & 1.24497 & 1.27784\\
+ \hline
+\end{tabular}
+
+\vspace{10mm}
+As you can see from our results, the speed of our program grows almost linearly. Which is a nice case for a parallelism. The linear speed up stays consistent within both sized datasets.\\
+
+We learned quite a bit through this project. The first was about -O3 flags and that they don't guarantee steps to be proccessed in the same order. We also learned about work-stealing and work-sharing and how they can effect preformence and speedup.\\
+
+Our rasterizer optimization proved to be a proficent optimization for paralellization which scales well. 
