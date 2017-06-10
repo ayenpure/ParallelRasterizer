@@ -1,3 +1,11 @@
-\chapter*{Executive Summary}
-A rasterizer that Abishek and I designed. We decided to parallelize it with tbb, openmp, and cilk to compare the differnces beween the two. We focused mostly on the main Rendering function and the scan line algorithm.
-We decided on these two parts of the algorithm because of the impact it had on the program when analysizing with a profiler. (see pages below)  
+\chapter*{Executive Summary and Motivation}
+
+There are many ways to render an image given an input dataset. viz. Ray Tracing, Rasterizing, Volume Rendering.
+Among all of these approaches the one that is most deployed in case of real time(gaming, etc.) applications is Rasterizing. Ray Tracing and Volume Rendering are use in scientific visualization and in case where the images can be pre rendered to use later(animations). Since rasterization needs to be done in real time, it is necessary that we make it as fast as possible, and hence we choose to parallelize the algorithm for rasterizing.
+\\
+
+A rasterizer is a program which works on polygons of a dataset individually and renders an output image by appliying the scan line algorith on each polygon. The scanline algorithm first tries to find the bounds of the pixel rows and colums to begin which are determined by the vertices of the polygon.
+For each pixel that occurs in the above calculated bounds, the algorithm calculates the normals, color and the depth values. In case of overlapping polygons, the depth values determine what color and normal values are to be deposited to the pixel.
+\\
+
+We started by writing a serial rasterizer. We decided to parallelize it with OpenMP, Cilk, and TBB to compare the differnces between all of them. We focused mostly on the main rendering function and the scan line algorithm to parallelize on. We decided on these two parts of the algorithm because of the impact it had on the program when analysizing with a profiler. (see pages below)  

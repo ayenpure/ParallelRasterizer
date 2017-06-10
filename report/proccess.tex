@@ -1,8 +1,7 @@
 \chapter*{Proccess of Parallelizing}
 
-\begin{center}
-    \Large\textbf{Serial Optimizations}\\
-\end{center}
+\subsection*{Serial Optimizations}
+
     The first thing we did before we embarked on actually parallelizing this project was to optimize our serial code in specified regions. Typically, when optimizing code you look for a certian number of things. The following is what we focused on. 
 
 \begin{itemize}
@@ -11,26 +10,16 @@
     \item Passed parameter optimization, this is when a funcion is passed a copy or a pointer when not needed. The problem that this creates is the speed at which items can be passed can bottleneck preformance enough to sometimes lead to a noticble difference. Our method of reducing such a problem is to either pass references instead of pointers, eliminate them from being passed at all, or to pass a pointer/reference instead of a whole copy of the data.
 \end{itemize}
 
+\subsection*{Work Stealing vs. Work Sharing}
+Work-sharing a parallel construct in which a program shares part of the data between different processors or threads in able to execute the program. There are plenty of different patterns to achieve the desired output. Where work stealing is different is that it will take any work from a thread if it is idle in order to not waste it's processing power.
 
-\begin{center}
-    \vspace{20mm}
-    \Large\textbf{OMP Optimizations}\\
-\end{center}
+\subsection*{Summary of optimization}
 
-    OMP was the hardest to parallelize with this project. The problem that we ran into was the way that OMP was not work-sharing. We believe that the absense of work stealing was the actual culprit of the non admerable aspect of the performance.
+\subsubsection*{OpenMP}
+OpenMP follows a work sharing approach for scheduling tasks in parallel, which is not very efficient at load balancing. The program can only be as fast as the slowest thread in the system
 
-\begin{center}
-    \Large\textbf{Work Sharing/Stealing}\\
-\end{center}
-    Work-sharing a parallel construct in which a program shares part of the data between different processors or threads in able to execute the program. There are plenty of different patterns to achieve the desired output. Where work stealing is different is that it will take any work from a thread if it is idle in order to not waste it's processing power. 
+Our solution to solve this problem was to try multiple different methods. The first method we attempted was tasks, which we were hoping that the threads would have more data per thread, so that there would be less idle time per thread. This proved to be of minimal success. The next attempt was to try chuncking the data within the for loops. Chunking is the proccess of setting a set size per thread/processor to do a set size of work. This proved to improve preformance, but only minimally. Lastly, we tried to increase the stacksize that each thread could have. This was also with the hope that there would be less idle time per thread and allow for the threads to do more evenly distribute work, this also minimally impacted preformence. 
 
-    We beleive when running OMP there was no work stealing, which isn't always a bad thing, but in this case the threads were not load balancing well, which would increase the idle time of the threads and decrease parallel time.
-
-    Our solution ot solve this problem was to try multiple different methods. The first method we attempted was tasks, which we were hoping that the threads would have more data per thread, so that there would be less idle time per thread. This proved to be of minimal success. The next attempt was to try chuncking the data within the for loops. Chunking is the proccess of setting a set size per thread/processor to do a set size of work. This proved to improve preformance, but only minimally. Lastly, we tried to increase the stacksize that each thread could have. This was also with the hope that there would be less idle time per thread and allow for the threads to do more evenly distribute work, this also minimally impacted preformence. 
-
-\begin{center}
-    \Large\textbf{Cilk and TBB}\\
-\end{center}
-
-    Cilk and TBB actually preformed great in our rasterizer. We actually had an incredible increase (that seems to speed up linearly) in speed while parallelizing our code with these two languages. We focused on the main functions and the scan line algorithm implementation. 
+\subsubsection{CilkPlus and TBB}
+Cilk and TBB actually preformed great in our rasterizer. We actually had an incredible increase in speedup(almost linear) evident from our results while parallelizing our code with these two languages. We focused on the main functions and the scan line algorithm implementation. This speedup is good because Cilk and TBB use work stealing model to schedule it's threads.
     
